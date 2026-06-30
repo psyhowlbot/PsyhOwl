@@ -1,0 +1,239 @@
+:root {
+  --bg1: #171d16;
+  --bg2: #2a3424;
+  --card: rgba(255, 250, 232, 0.1);
+  --card-strong: rgba(255, 250, 232, 0.16);
+  --text: #fff7dc;
+  --muted: rgba(255, 247, 220, 0.72);
+  --accent: #c7a96a;
+  --accent2: #7f9f5a;
+  --danger: #e27965;
+  --shadow: 0 22px 80px rgba(0, 0, 0, 0.35);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Arial, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 20% 10%, rgba(199, 169, 106, 0.28), transparent 34%),
+    radial-gradient(circle at 80% 0%, rgba(127, 159, 90, 0.28), transparent 30%),
+    linear-gradient(160deg, var(--bg1), var(--bg2));
+}
+
+.app-shell {
+  width: min(720px, 100%);
+  margin: 0 auto;
+  padding: 22px 16px 34px;
+}
+
+.hero-card,
+.premium-card,
+.safety-card {
+  border: 1px solid rgba(255, 247, 220, 0.14);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+  border-radius: 32px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.hero-card {
+  min-height: calc(100vh - 54px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-card::before {
+  content: "";
+  position: absolute;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(199, 169, 106, 0.18), transparent 66%);
+  top: 44px;
+  pointer-events: none;
+}
+
+.status-pill {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.22);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.status-pill.connected {
+  color: #eaffd4;
+  background: rgba(127, 159, 90, 0.26);
+}
+
+.status-pill.error {
+  color: #ffe1dc;
+  background: rgba(226, 121, 101, 0.22);
+}
+
+.owl-wrap {
+  position: relative;
+  width: min(270px, 72vw);
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  margin-bottom: 8px;
+}
+
+.owl {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 26px 34px rgba(0, 0, 0, 0.38));
+  transform-origin: center bottom;
+  animation: breathe 4s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+}
+
+.pulse-ring {
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(199, 169, 106, 0.26);
+  opacity: 0;
+  z-index: 1;
+}
+
+.owl-wrap.listening .pulse-ring {
+  animation: pulse 1.8s ease-in-out infinite;
+  opacity: 1;
+}
+
+.owl-wrap.speaking .owl {
+  animation: speak 0.9s ease-in-out infinite;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(42px, 12vw, 72px);
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+}
+
+.subtitle {
+  margin: 14px 0 20px;
+  max-width: 460px;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.45;
+}
+
+.timer-card {
+  width: min(360px, 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  background: var(--card-strong);
+  border: 1px solid rgba(255, 247, 220, 0.12);
+  margin-bottom: 18px;
+}
+
+.timer-card span {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.timer-card strong {
+  font-size: 22px;
+}
+
+.controls {
+  width: min(360px, 100%);
+  display: grid;
+  gap: 10px;
+}
+
+button {
+  width: 100%;
+  border: 0;
+  border-radius: 20px;
+  padding: 16px 18px;
+  font-size: 17px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: transform 0.16s ease, opacity 0.16s ease;
+}
+
+button:active { transform: scale(0.98); }
+button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.primary-btn {
+  color: #1b2118;
+  background: linear-gradient(135deg, #fff2bd, var(--accent));
+  box-shadow: 0 14px 34px rgba(199, 169, 106, 0.22);
+}
+
+.secondary-btn {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 247, 220, 0.14);
+}
+
+.hidden { display: none; }
+
+.hint {
+  min-height: 42px;
+  max-width: 480px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 16px 0 0;
+}
+
+.premium-card h2,
+.safety-card h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+
+.premium-card p,
+.safety-card p {
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0 0 8px;
+}
+
+.small { font-size: 13px; }
+
+@keyframes breathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-5px) scale(1.018); }
+}
+
+@keyframes speak {
+  0%, 100% { transform: translateY(0) scale(1.01) rotate(-0.3deg); }
+  50% { transform: translateY(-7px) scale(1.04) rotate(0.3deg); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.82); opacity: 0.7; }
+  100% { transform: scale(1.2); opacity: 0; }
+}
+
+@media (max-width: 420px) {
+  .hero-card { padding: 20px 16px; border-radius: 28px; }
+  .status-pill { top: 14px; right: 14px; }
+}

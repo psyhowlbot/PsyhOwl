@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <title>Совёнок Premium</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero-card">
+        <div class="status-pill" id="connectionStatus">Не подключён</div>
+
+        <div class="owl-wrap" id="owlWrap">
+          <div class="pulse-ring"></div>
+          <img src="/assets/sovenok.png" alt="Совёнок" class="owl" id="owlImage" />
+        </div>
+
+        <h1>Совёнок</h1>
+        <p class="subtitle">Голосовой AI-собеседник для спокойного разговора и поддержки.</p>
+
+        <div class="timer-card">
+          <span>Осталось сегодня</span>
+          <strong id="timeRemaining">—</strong>
+        </div>
+
+        <div class="controls">
+          <button class="primary-btn" id="startBtn">Поговорить с Совёнком</button>
+          <button class="secondary-btn hidden" id="stopBtn">Завершить разговор</button>
+        </div>
+
+        <p class="hint" id="hintText">Нажмите кнопку, разрешите микрофон и говорите естественно.</p>
+      </section>
+
+      <section class="premium-card" id="premiumCard">
+        <h2>Совёнок Premium</h2>
+        <p><b>12 990 ₽/мес</b> · до 60 минут голосового разговора в день.</p>
+        <p class="small">Сейчас в MVP подписка выдаётся администратором вручную. Эквайринг можно подключить следующим этапом.</p>
+      </section>
+
+      <section class="safety-card">
+        <h2>Важно</h2>
+        <p>
+          Совёнок — AI-помощник поддержки, а не врач и не замена психотерапевту. При угрозе жизни,
+          самоповреждении или насилии обратитесь к близкому человеку, специалисту или в экстренную службу.
+        </p>
+      </section>
+    </main>
+
+    <audio id="remoteAudio" autoplay></audio>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
