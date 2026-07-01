@@ -2,6 +2,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const TIMEWEB_APP_URL = "https://psyhowlbot-psyhowl-5f93.twc1.net";
+
 const splitIds = (value = "") =>
   value
     .split(",")
@@ -15,6 +17,15 @@ const splitUsernames = (value = "") =>
     .filter(Boolean);
 
 const unique = (values) => [...new Set(values.filter(Boolean))];
+
+function publicAppUrl() {
+  const value = String(process.env.PUBLIC_APP_URL || "").trim().replace(/\/$/, "");
+  if (!value) return TIMEWEB_APP_URL;
+  if (value === "https://example.com") return TIMEWEB_APP_URL;
+  if (value === "https://your-domain.com") return TIMEWEB_APP_URL;
+  if (value === "http://localhost:3000" && process.env.NODE_ENV === "production") return TIMEWEB_APP_URL;
+  return value;
+}
 
 const autoAdminIds = splitIds(process.env.AUTO_ADMIN_TELEGRAM_IDS || "8707664475");
 const autoAdminUsernames = splitUsernames(
@@ -34,7 +45,7 @@ export const config = {
     requireAuth: process.env.REQUIRE_TELEGRAM_AUTH !== "false",
   },
 
-  publicAppUrl: (process.env.PUBLIC_APP_URL || "https://psyhowlbot-psyhowl-5f93.twc1.net").replace(/\/$/, ""),
+  publicAppUrl: publicAppUrl(),
 
   openai: {
     apiKey: process.env.OPENAI_API_KEY || "",
