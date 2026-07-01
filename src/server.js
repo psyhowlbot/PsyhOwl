@@ -9,11 +9,12 @@ import {
   accountSessionUsage,
   createActiveSession,
   getAccessInfo,
+  getContentSettings,
   grantPremium,
   isAdmin,
   listUsers,
-  markAdminWelcomeSent,
   revokePremium,
+  updateContentSettings,
   upsertUser,
 } from "./db.js";
 import { makeSafetyIdentifier, requireTelegramUser } from "./telegramAuth.js";
@@ -45,24 +46,63 @@ function secondsToText(seconds) {
   return `${m} мин. ${s.toString().padStart(2, "0")} сек.`;
 }
 
-function adminWelcomeText(user) {
-  const name = user.firstName ? `, ${user.firstName}` : "";
+function renderTemplate(template, user = {}) {
+  const firstName = String(user.firstName || "").trim();
+  const username = String(user.username || "").trim();
+  const dailyMinutes = Math.round(config.product.dailyLimitSeconds / 60);
+  const values = {
+    name: firstName,
+    firstName,
+    username,
+    nameSuffix: firstName ? `, ${firstName}` : "",
+    price: config.product.priceRub.toLocaleString("ru-RU"),
+    dailyMinutes: String(dailyMinutes),
+    productName: config.product.name,
+    appName: "Совёнок",
+  };
 
-  return [
-    `🦉 Добро пожаловать${name}.`,
-    "",
-    "Совёнок узнал тебя и открыл администраторский доступ.",
-    "Теперь ты можешь разговаривать со мной без оплаты и без дневного лимита.",
-    "",
-    "Рад, что ты здесь. Нажимай кнопку ниже — я рядом.",
-  ].join("\n");
+  return String(template || "").replace(/{{\s*([\w]+)\s*}}/g, (_, key) => values[key] ?? "");
 }
 
-async function sendAdminWelcomeIfNeeded(bot, chatId, user, replyMarkup) {
-  if (!user?.isAdmin || user.adminWelcomeSentAt) return;
+function appUrl(pathOrUrl = "/") {
+  const raw = String(pathOrUrl || "/").trim();
 
-  await bot.sendMessage(chatId, adminWelcomeText(user), { reply_markup: replyMarkup });
-  markAdminWelcomeSent(user.telegramId);
+  if (/^(https?:|tg:)/i.test(raw)) return raw;
+
+  try {
+    return new URL(raw.startsWith("/") ? raw : `/${raw}`, config.publicAppUrl).toString();
+  } catch {
+    return config.publicAppUrl;
+  }
+}
+
+function makeInlineButton(buttonConfig = {}, fallbackText, fallbackUrl = "/") {
+  const text = String(buttonConfig.text || fallbackText).trim() || fallbackText;
+  const target = appUrl(buttonConfig.url || fallbackUrl);
+
+  try {
+    const targetUrl = new URL(target);
+    const publicUrl = new URL(config.publicAppUrl);
+
+    if (targetUrl.protocol === "https:" && targetUrl.origin === publicUrl.origin) {
+      return { text, web_app: { url: targetUrl.toString() } };
+    }
+  } catch {
+    return { text, web_app: { url: config.publicAppUrl } };
+  }
+
+  return { text, url: target };
+}
+
+function requireAdminUser(req, res, next) {
+  const user = upsertUser(req.telegramUser);
+
+  if (!isAdmin(user.telegramId)) {
+    return res.status(403).json({ ok: false, error: "admin_required", message: "Админ-панель доступна только администраторам." });
+  }
+
+  req.currentUser = user;
+  next();
 }
 
 function requireOpenAiKey(req, res, next) {
@@ -80,6 +120,10 @@ app.get("/api/health", (req, res) => {
   res.json({ ok: true, app: "sovenok-ai-bot", time: new Date().toISOString() });
 });
 
+app.get("/api/content", (req, res) => {
+  res.json({ ok: true, content: getContentSettings() });
+});
+
 app.get("/api/me", requireTelegramUser, (req, res) => {
   const user = upsertUser(req.telegramUser);
   const access = getAccessInfo(user.telegramId);
@@ -88,6 +132,7 @@ app.get("/api/me", requireTelegramUser, (req, res) => {
     ok: true,
     user,
     access,
+    content: getContentSettings().miniApp,
     product: {
       name: config.product.name,
       priceRub: config.product.priceRub,
@@ -97,6 +142,15 @@ app.get("/api/me", requireTelegramUser, (req, res) => {
       voice: config.openai.voice,
     },
   });
+});
+
+app.get("/api/admin/content", requireTelegramUser, requireAdminUser, (req, res) => {
+  res.json({ ok: true, content: getContentSettings() });
+});
+
+app.put("/api/admin/content", requireTelegramUser, requireAdminUser, (req, res) => {
+  const content = updateContentSettings(req.body?.content || {});
+  res.json({ ok: true, content });
 });
 
 app.post("/api/usage/heartbeat", requireTelegramUser, (req, res) => {
@@ -232,11 +286,6 @@ function startTelegramBot() {
 
   const bot = new TelegramBot(config.telegram.botToken, { polling: true });
 
-  const appButton = {
-    text: "Поговорить с Совёнком",
-    web_app: { url: config.publicAppUrl },
-  };
-
   bot.onText(/\/start/, async (msg) => {
     const chatId = msg.chat.id;
     const from = msg.from || {};
@@ -247,21 +296,28 @@ function startTelegramBot() {
       username: from.username || "",
       languageCode: from.language_code || "ru",
     });
+    const content = getContentSettings();
+
+    if (user.isAdmin) {
+      const replyMarkup = {
+        inline_keyboard: [[makeInlineButton(content.bot.buttons.adminPanel, "Админ-Панель", "/?admin=1")]],
+      };
+
+      await bot.sendMessage(chatId, renderTemplate(content.bot.greetings.admin, user), { reply_markup: replyMarkup });
+      return;
+    }
 
     const replyMarkup = {
-      inline_keyboard: [[{ text: appButton.text, web_app: appButton.web_app }]],
+      inline_keyboard: [
+        [makeInlineButton(content.bot.buttons.talk, "Поговорить с Совёнком", "/")],
+        [
+          makeInlineButton(content.bot.buttons.payment, "Оплатить подписку", "/?screen=subscription"),
+          makeInlineButton(content.bot.buttons.support, "Чат с поддержкой", "/?screen=support"),
+        ],
+      ],
     };
 
-    await sendAdminWelcomeIfNeeded(bot, chatId, user, replyMarkup);
-
-    const text = [
-      "🦉 Привет. Я Совёнок — голосовой AI-собеседник для спокойного разговора и поддержки.",
-      "",
-      `Premium: ${config.product.priceRub.toLocaleString("ru-RU")} ₽/мес, до 60 минут в день.`,
-      "Нажмите кнопку ниже, чтобы открыть Mini App.",
-    ].join("\n");
-
-    await bot.sendMessage(chatId, text, { reply_markup: replyMarkup });
+    await bot.sendMessage(chatId, renderTemplate(content.bot.greetings.user, user), { reply_markup: replyMarkup });
   });
 
   bot.onText(/\/status/, async (msg) => {
@@ -322,18 +378,6 @@ function startTelegramBot() {
     { command: "status", description: "Проверить лимиты" },
     { command: "id", description: "Показать мой Telegram ID" },
   ]).catch((error) => console.warn("setMyCommands failed", error.message));
-
-  fetch(`https://api.telegram.org/bot${config.telegram.botToken}/setChatMenuButton`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      menu_button: {
-        type: "web_app",
-        text: "Совёнок",
-        web_app: { url: config.publicAppUrl },
-      },
-    }),
-  }).catch((error) => console.warn("setChatMenuButton failed", error.message));
 
   bot.on("polling_error", (error) => console.error("Telegram polling error", error.message));
   console.log("Telegram bot started");
