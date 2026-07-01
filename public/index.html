@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <title>Совёнок Premium</title>
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/admin.css" />
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
   </head>
   <body>
@@ -17,11 +18,11 @@
           <img src="/assets/sovenok.png" alt="Совёнок" class="owl" id="owlImage" />
         </div>
 
-        <h1>Совёнок</h1>
-        <p class="subtitle">Тихое место, где тебя слышат. Голосовой AI-собеседник для спокойного разговора и поддержки.</p>
+        <h1 id="appTitle">Совёнок</h1>
+        <p class="subtitle" id="appSubtitle">Тихое место, где тебя слышат. Голосовой AI-собеседник для спокойного разговора и поддержки.</p>
 
         <div class="timer-card">
-          <span>Осталось сегодня</span>
+          <span id="timerLabel">Осталось сегодня</span>
           <strong id="timeRemaining">—</strong>
         </div>
 
@@ -33,18 +34,38 @@
         <p class="hint" id="hintText">Нажмите кнопку, разрешите микрофон и говорите естественно.</p>
       </section>
 
+      <section class="screen-card hidden" id="paymentCard">
+        <h2 id="paymentTitle">Оплата подписки</h2>
+        <p id="paymentText">Оплата пока подключается. Напишите в поддержку, чтобы оформить доступ вручную.</p>
+      </section>
+
+      <section class="screen-card hidden" id="supportCard">
+        <h2 id="supportTitle">Поддержка</h2>
+        <p id="supportText">Напишите администратору, если нужна помощь с оплатой, доступом или работой Совёнка.</p>
+      </section>
+
       <section class="premium-card" id="premiumCard">
-        <h2>Совёнок Premium</h2>
-        <p><b>12 990 ₽/мес</b> · до 60 минут голосового разговора в день.</p>
-        <p class="small">Сейчас в MVP подписка выдаётся администратором вручную. Эквайринг можно подключить следующим этапом.</p>
+        <h2 id="premiumTitle">Совёнок Premium</h2>
+        <p id="premiumDescription"><b>12 990 ₽/мес</b> · до 60 минут голосового разговора в день.</p>
+        <p class="small" id="premiumSmall">Сейчас в MVP подписка выдаётся администратором вручную. Эквайринг можно подключить следующим этапом.</p>
       </section>
 
       <section class="safety-card">
-        <h2>Важно</h2>
-        <p>
+        <h2 id="safetyTitle">Важно</h2>
+        <p id="safetyText">
           Совёнок — AI-помощник поддержки, а не врач и не замена психотерапевту. При угрозе жизни,
           самоповреждении или насилии обратитесь к близкому человеку, специалисту или в экстренную службу.
         </p>
+      </section>
+
+      <section class="admin-panel hidden" id="adminPanel">
+        <h2 id="adminTitle">Админ-Панель</h2>
+        <p id="adminSubtitle">Редактируйте приветствия, инлайн-кнопки и тексты Mini App без правки кода.</p>
+        <div class="admin-fields" id="adminFields"></div>
+        <div class="admin-actions">
+          <button class="primary-btn" id="adminSaveBtn">Сохранить изменения</button>
+          <p class="admin-notice" id="adminNotice"></p>
+        </div>
       </section>
     </main>
 

@@ -1,0 +1,85 @@
+.screen-card,
+.admin-panel {
+  border: 1px solid rgba(255, 237, 186, 0.18);
+  background: rgba(7, 12, 11, 0.74);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px) saturate(1.08);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+  border-radius: 26px;
+  padding: 22px;
+  margin-bottom: 14px;
+}
+
+.screen-card h2,
+.admin-panel h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+
+.screen-card p,
+.admin-panel p {
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0 0 8px;
+}
+
+.admin-panel {
+  text-align: left;
+}
+
+.admin-fields {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.admin-field {
+  display: grid;
+  gap: 7px;
+}
+
+.admin-field span {
+  color: rgba(255, 247, 220, 0.86);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-field textarea {
+  width: 100%;
+  min-height: 48px;
+  resize: vertical;
+  border: 1px solid rgba(255, 237, 186, 0.16);
+  border-radius: 16px;
+  padding: 12px 13px;
+  background: rgba(0, 0, 0, 0.26);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.45;
+  outline: none;
+}
+
+.admin-field textarea:focus {
+  border-color: rgba(245, 198, 106, 0.52);
+  box-shadow: 0 0 0 3px rgba(245, 198, 106, 0.10);
+}
+
+.admin-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.admin-notice {
+  min-height: 20px;
+  color: #ffe5a3 !important;
+  font-size: 13px;
+}
+
+@media (max-width: 420px) {
+  .screen-card,
+  .admin-panel {
+    padding: 18px;
+    border-radius: 24px;
+  }
+}

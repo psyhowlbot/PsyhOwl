@@ -6,12 +6,141 @@ import { config } from "./config.js";
 const DATA_DIR = process.env.DATA_DIR || path.join("/tmp", "sovenok-ai-bot-data");
 const DB_PATH = path.join(DATA_DIR, "db.json");
 
+function defaultContentSettings() {
+  return {
+    bot: {
+      greetings: {
+        user: [
+          "🦉 Привет{{nameSuffix}}. Я Совёнок — голосовой AI-собеседник для спокойного разговора и поддержки.",
+          "",
+          "Premium: {{price}} ₽/мес, до {{dailyMinutes}} минут в день.",
+          "Выберите действие ниже.",
+        ].join("\n"),
+        admin: [
+          "🦉 Добро пожаловать{{nameSuffix}}.",
+          "",
+          "Совёнок узнал тебя и открыл администраторский доступ.",
+          "Можно разговаривать без оплаты и дневного лимита, а также редактировать тексты проекта.",
+          "",
+          "Нажми кнопку ниже, чтобы открыть админ-панель.",
+        ].join("\n"),
+      },
+      buttons: {
+        payment: {
+          text: "Оплатить подписку",
+          url: "/?screen=subscription",
+        },
+        support: {
+          text: "Чат с поддержкой",
+          url: "/?screen=support",
+        },
+        talk: {
+          text: "Поговорить с Совёнком",
+          url: "/",
+        },
+        adminPanel: {
+          text: "Админ-Панель",
+          url: "/?admin=1",
+        },
+      },
+    },
+    miniApp: {
+      title: "Совёнок",
+      subtitle: "Тихое место, где тебя слышат. Голосовой AI-собеседник для спокойного разговора и поддержки.",
+      statusDisconnected: "Не подключён",
+      statusReady: "Готов",
+      statusConnecting: "Подключение…",
+      statusConnected: "Совёнок рядом",
+      statusTalking: "Разговор идёт",
+      statusError: "Ошибка",
+      statusLoginError: "Ошибка входа",
+      statusDailyLimit: "Лимит на сегодня",
+      statusTrialEnded: "Пробный лимит окончен",
+      timerLabel: "Осталось сегодня",
+      startButton: "Поговорить с Совёнком",
+      stopButton: "Завершить разговор",
+      initialHint: "Нажмите кнопку, разрешите микрофон и говорите естественно.",
+      readyHintPremium: "Нажмите кнопку, и Совёнок начнёт голосовой разговор.",
+      readyHintTrial: "У вас есть пробные минуты для теста Совёнка.",
+      readyHintAdmin: "Администраторский доступ активен. Можно разговаривать с Совёнком без оплаты и дневного лимита.",
+      micHint: "Запрашиваю доступ к микрофону и создаю защищённую голосовую сессию.",
+      talkingHint: "Говорите естественно. Совёнок услышит вас и ответит голосом.",
+      sessionEndedHint: "Разговор завершён. Можно начать новую сессию, если лимит ещё остался.",
+      limitTodayHint: "На сегодня лимит разговора закончился. Завтра снова будет до 60 минут.",
+      trialEndedHint: "Пробный доступ закончился. Нужна подписка Совёнок Premium.",
+      limitSoonHint: "Осталось около 10 минут. Совёнок поможет мягко подвести итог разговора.",
+      limitEndedHint: "Лимит разговора закончился. Сессия будет завершена.",
+      openViaTelegramHint: "Откройте приложение через Telegram-бота. В обычном браузере авторизация Telegram недоступна.",
+      voiceSessionErrorHint: "Совёнок получил ошибку от голосовой сессии. Попробуйте завершить и начать снова.",
+      connectErrorFallback: "Не удалось начать разговор.",
+      premiumTitle: "Совёнок Premium",
+      premiumDescription: "<b>12 990 ₽/мес</b> · до 60 минут голосового разговора в день.",
+      premiumSmall: "Сейчас в MVP подписка выдаётся администратором вручную. Эквайринг можно подключить следующим этапом.",
+      premiumAdminSmall: "Администраторский доступ активен: без оплаты и без дневного лимита.",
+      premiumActiveSmall: "Premium активен. До 60 минут голосового разговора в день.",
+      safetyTitle: "Важно",
+      safetyText: "Совёнок — AI-помощник поддержки, а не врач и не замена психотерапевту. При угрозе жизни, самоповреждении или насилии обратитесь к близкому человеку, специалисту или в экстренную службу.",
+      paymentTitle: "Оплата подписки",
+      paymentText: "Оплата пока подключается. Напишите в поддержку, чтобы оформить доступ вручную.",
+      supportTitle: "Поддержка",
+      supportText: "Напишите администратору, если нужна помощь с оплатой, доступом или работой Совёнка.",
+      adminPanelTitle: "Админ-Панель",
+      adminPanelSubtitle: "Редактируйте приветствия, инлайн-кнопки и тексты Mini App без правки кода.",
+      adminSaveButton: "Сохранить изменения",
+      adminSaved: "Сохранено. Новые тексты применятся сразу.",
+      adminForbidden: "Админ-панель доступна только администраторам.",
+      adminLoadError: "Не удалось загрузить админ-панель.",
+      adminSaveError: "Не удалось сохранить изменения.",
+    },
+  };
+}
+
 function emptyDb() {
   return {
     users: {},
     usage: {},
     sessions: {},
     events: [],
+    content: defaultContentSettings(),
+  };
+}
+
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function mergeKnownSettings(defaults, source) {
+  const result = Array.isArray(defaults) ? [...defaults] : { ...defaults };
+  if (!isPlainObject(source)) return result;
+
+  for (const [key, value] of Object.entries(source)) {
+    if (!(key in defaults)) continue;
+    if (isPlainObject(defaults[key])) {
+      result[key] = mergeKnownSettings(defaults[key], value);
+    } else if (value !== undefined && value !== null) {
+      result[key] = String(value).slice(0, 5000);
+    }
+  }
+
+  return result;
+}
+
+function normalizeContentSettings(value) {
+  return mergeKnownSettings(defaultContentSettings(), value);
+}
+
+function normalizeDb(raw) {
+  const base = emptyDb();
+  const db = isPlainObject(raw) ? raw : {};
+
+  return {
+    ...base,
+    ...db,
+    users: isPlainObject(db.users) ? db.users : base.users,
+    usage: isPlainObject(db.usage) ? db.usage : base.usage,
+    sessions: isPlainObject(db.sessions) ? db.sessions : base.sessions,
+    events: Array.isArray(db.events) ? db.events : base.events,
+    content: normalizeContentSettings(db.content),
   };
 }
 
@@ -23,7 +152,7 @@ function ensureDbFile() {
 function readDb() {
   ensureDbFile();
   try {
-    return JSON.parse(fs.readFileSync(DB_PATH, "utf8"));
+    return normalizeDb(JSON.parse(fs.readFileSync(DB_PATH, "utf8")));
   } catch {
     return emptyDb();
   }
@@ -31,7 +160,7 @@ function readDb() {
 
 function writeDb(db) {
   ensureDbFile();
-  fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
+  fs.writeFileSync(DB_PATH, JSON.stringify(normalizeDb(db), null, 2));
 }
 
 function todayKey(date = new Date()) {
@@ -59,6 +188,22 @@ function isConfiguredAdmin(tgUser = {}) {
     config.telegram.autoAdminIds.includes(id) ||
     (username && config.telegram.autoAdminUsernames.includes(username))
   );
+}
+
+export function getContentSettings() {
+  const db = readDb();
+  return db.content;
+}
+
+export function updateContentSettings(contentPatch = {}) {
+  const db = readDb();
+  const nextContent = normalizeContentSettings(mergeKnownSettings(db.content, contentPatch));
+
+  db.content = nextContent;
+  db.events.push({ type: "update_content", createdAt: new Date().toISOString() });
+  writeDb(db);
+
+  return nextContent;
 }
 
 export function upsertUser(tgUser) {
