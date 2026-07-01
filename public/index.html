@@ -12,13 +12,13 @@
       <section class="hero-card">
         <div class="status-pill" id="connectionStatus">Не подключён</div>
 
-        <div class="owl-wrap" id="owlWrap">
+        <div class="owl-wrap" id="owlWrap" aria-hidden="true">
           <div class="pulse-ring"></div>
           <img src="/assets/sovenok.png" alt="Совёнок" class="owl" id="owlImage" />
         </div>
 
         <h1>Совёнок</h1>
-        <p class="subtitle">Голосовой AI-собеседник для спокойного разговора и поддержки.</p>
+        <p class="subtitle">Тихое место, где тебя слышат. Голосовой AI-собеседник для спокойного разговора и поддержки.</p>
 
         <div class="timer-card">
           <span>Осталось сегодня</span>
@@ -49,6 +49,7 @@
     </main>
 
     <audio id="remoteAudio" autoplay></audio>
+    <script src="/backgrounds.js"></script>
     <script src="/app.js" type="module"></script>
   </body>
 </html>
