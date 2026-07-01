@@ -1,10 +1,10 @@
 :root {
   --bg1: #050909;
   --bg2: #10201d;
-  --card: rgba(8, 13, 12, 0.58);
-  --card-strong: rgba(14, 20, 18, 0.72);
+  --card: rgba(8, 13, 12, 0.42);
+  --card-strong: rgba(14, 20, 18, 0.66);
   --text: #fff7dc;
-  --muted: rgba(255, 247, 220, 0.72);
+  --muted: rgba(255, 247, 220, 0.76);
   --accent: #f5c66a;
   --accent2: #7f9f7a;
   --danger: #e27965;
@@ -36,19 +36,22 @@ body::before {
     var(--ambient-bg),
     radial-gradient(circle at 50% 72%, rgba(245, 198, 106, 0.25), transparent 38%),
     linear-gradient(180deg, #071010, #182a24);
-  background-size: cover, cover, cover;
-  background-position: center, center, center;
+  background-size: auto min(84svh, 820px), cover, cover;
+  background-position: center 112px, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
   opacity: 0;
-  transform: scale(1.015);
-  filter: saturate(1.06) brightness(0.95);
-  transition: opacity 0.7s ease, transform 0.8s ease, filter 0.8s ease;
+  transform: scale(1.0);
+  filter: saturate(1.12) brightness(1.06);
+  transition: opacity 0.7s ease, transform 0.8s ease, filter 0.8s ease, background-position 0.8s ease;
 }
 
 body.art-ready::before { opacity: 1; }
 
 body.conversation-mode::before {
-  transform: scale(1.07);
-  filter: saturate(1.08) brightness(0.72) blur(1.6px);
+  background-size: auto min(92svh, 900px), cover, cover;
+  background-position: center 72px, center, center;
+  transform: scale(1.02);
+  filter: saturate(1.1) brightness(0.82) blur(0.6px);
 }
 
 body::after {
@@ -58,8 +61,8 @@ body::after {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(circle at 50% 56%, rgba(250, 194, 91, 0.12), transparent 36%),
-    linear-gradient(180deg, rgba(1, 5, 5, 0.62) 0%, rgba(1, 5, 5, 0.18) 36%, rgba(1, 5, 5, 0.56) 74%, rgba(1, 5, 5, 0.92) 100%);
+    radial-gradient(circle at 50% 52%, rgba(250, 194, 91, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(1, 5, 5, 0.58) 0%, rgba(1, 5, 5, 0.10) 30%, rgba(1, 5, 5, 0.12) 60%, rgba(1, 5, 5, 0.68) 100%);
 }
 
 .app-shell {
@@ -73,11 +76,11 @@ body::after {
 .hero-card,
 .premium-card,
 .safety-card {
-  border: 1px solid rgba(255, 237, 186, 0.16);
+  border: 1px solid rgba(255, 237, 186, 0.18);
   background: var(--card);
   box-shadow: var(--shadow);
-  backdrop-filter: blur(24px) saturate(1.12);
-  -webkit-backdrop-filter: blur(24px) saturate(1.12);
+  backdrop-filter: blur(18px) saturate(1.08);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
   border-radius: 30px;
   padding: 22px;
   margin-bottom: 14px;
@@ -94,7 +97,7 @@ body::after {
   overflow: hidden;
   padding: 72px 18px 18px;
   background:
-    linear-gradient(180deg, rgba(4, 9, 9, 0.28), rgba(4, 9, 9, 0.08) 45%, rgba(4, 9, 9, 0.52) 100%);
+    linear-gradient(180deg, rgba(4, 9, 9, 0.22), rgba(4, 9, 9, 0.02) 45%, rgba(4, 9, 9, 0.32) 100%);
 }
 
 .hero-card::before {
@@ -105,17 +108,17 @@ body::after {
   pointer-events: none;
   border-radius: inherit;
   background:
-    radial-gradient(circle at 50% 64%, rgba(245, 198, 106, 0.15), transparent 29%),
-    linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0));
+    radial-gradient(circle at 50% 55%, rgba(245, 198, 106, 0.07), transparent 31%),
+    linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0));
 }
 
 .hero-card::after {
   content: "";
   position: absolute;
   left: 50%;
-  bottom: 21%;
-  width: 190px;
-  height: 190px;
+  bottom: 24%;
+  width: 210px;
+  height: 210px;
   border-radius: 50%;
   pointer-events: none;
   transform: translateX(-50%) scale(0.8);
@@ -137,11 +140,11 @@ body.conversation-mode .hero-card::after {
   right: 18px;
   padding: 9px 13px;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.32);
   color: var(--muted);
   font-size: 13px;
   line-height: 1;
-  border: 1px solid rgba(255, 237, 186, 0.12);
+  border: 1px solid rgba(255, 237, 186, 0.14);
   box-shadow: 0 10px 30px rgba(0,0,0,.22);
 }
 
@@ -174,7 +177,7 @@ h1 {
   z-index: 2;
   margin: 14px auto 0;
   max-width: 480px;
-  color: rgba(255, 247, 220, 0.8);
+  color: rgba(255, 247, 220, 0.84);
   font-size: clamp(15px, 4vw, 18px);
   line-height: 1.45;
   text-shadow: 0 6px 26px rgba(0,0,0,.45);
@@ -188,12 +191,12 @@ h1 {
   gap: 14px;
   padding: 14px 16px;
   border-radius: 22px;
-  background: rgba(8, 13, 12, 0.66);
-  border: 1px solid rgba(255, 237, 186, 0.16);
-  box-shadow: 0 18px 50px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.06);
-  margin: clamp(150px, 30svh, 300px) auto 14px;
-  backdrop-filter: blur(20px) saturate(1.2);
-  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  background: rgba(8, 13, 12, 0.60);
+  border: 1px solid rgba(255, 237, 186, 0.18);
+  box-shadow: 0 18px 50px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.07);
+  margin: clamp(325px, 44svh, 450px) auto 14px;
+  backdrop-filter: blur(18px) saturate(1.18);
+  -webkit-backdrop-filter: blur(18px) saturate(1.18);
 }
 
 .timer-card span {
@@ -249,7 +252,7 @@ button:disabled { opacity: 0.55; cursor: not-allowed; }
 .hint {
   min-height: 42px;
   max-width: 480px;
-  color: rgba(255, 247, 220, 0.76);
+  color: rgba(255, 247, 220, 0.78);
   font-size: 14px;
   line-height: 1.45;
   margin: 14px auto 0;
@@ -283,10 +286,20 @@ button:disabled { opacity: 0.55; cursor: not-allowed; }
 }
 
 @media (max-width: 420px) {
+  body::before {
+    background-size: auto min(78svh, 760px), cover, cover;
+    background-position: center 115px, center, center;
+  }
+
+  body.conversation-mode::before {
+    background-size: auto min(88svh, 850px), cover, cover;
+    background-position: center 80px, center, center;
+  }
+
   .app-shell { padding: 10px 10px 22px; }
   .hero-card { padding: 64px 14px 16px; border-radius: 28px; }
   .status-pill { top: 14px; right: 14px; }
-  .timer-card { margin-top: clamp(125px, 27svh, 230px); }
+  .timer-card { margin-top: clamp(300px, 40svh, 410px); }
   .premium-card,
   .safety-card { padding: 18px; border-radius: 24px; }
 }
