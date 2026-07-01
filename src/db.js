@@ -1,12 +1,9 @@
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
-import { fileURLToPath } from "url";
 import { config } from "./config.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const DATA_DIR = path.join(__dirname, "..", "data");
+const DATA_DIR = process.env.DATA_DIR || path.join("/tmp", "sovenok-ai-bot-data");
 const DB_PATH = path.join(DATA_DIR, "db.json");
 
 function emptyDb() {
